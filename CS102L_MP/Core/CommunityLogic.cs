@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CS102L_MP
@@ -26,25 +27,33 @@ namespace CS102L_MP
 
         // User Module
 
-        public void Login()
+        public bool Login(string username, string password)
         {
-            bool loggedin = false;
-            while (!loggedin)
+            username = username.ToLower();
+            foreach (var user in Users)
             {
-                string username = JHelper.InputString("Enter Username: ", toUpper: true);
-                string password = JHelper.InputString("Enter Password: ");
-                foreach (var user in Users)
+                if (user.Name.ToLower() == username && user.Password == password)
                 {
-                    if (user.Name.ToUpper() == username && user.Password == password)
-                    {
-                        LoggedinUser = user;
-                        loggedin = true;
-                        break;
-                    }
+                    LoggedinUser = user;
+                    return true;
                 }
-                Console.WriteLine("Incorrect username or password try again");
             }
+            return false;
 
+        }
+
+        public void Register(string username, string password)
+        {
+            var user = new User();
+            user.Id = Users.Max(e => e.Id) + 1;
+            user.Name = username;
+            user.Password = password;
+            Users.AddVertex(user);
+        }
+
+        public bool ExistingUser(string username)
+        {
+            return Users.Any(e => e.Name.ToLower() == username.ToLower());
         }
 
         public IEnumerable<UserPost> GetMainFeed()

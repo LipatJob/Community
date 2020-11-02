@@ -24,10 +24,81 @@ namespace CS102L_MP
             this.Logic = logic;
         }
 
+        public void WelcomeScreen()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine(
+                "Welcome to Community\n" +
+                "[1] Login\n" +
+                "[2] Register\n" +
+                "[X] Exit"
+                );
+                string selection = JHelper.InputString("Enter Selection: ", toUpper: true, validator: e=>e.In("1", "2", "X"));
+                if (selection == "1") { Login(); }
+                else if (selection == "2") { Register(); }
+                else if (selection == "X") { break; }
+            }
+            JHelper.ExitPrompt();
+        }
+
+        public void Login()
+        {
+            while (true)
+            {
+                Console.Clear();
+                // Enter Username
+                string username = JHelper.InputString("Enter Username: ");
+                string password = JHelper.InputPassword("Enter Password: ");
+
+                // Check if correct username and password
+                if (Logic.Login(username, password))
+                {
+                    break;
+                }
+
+                // If invalid username and password
+                Console.WriteLine("Please Enter A Valid Username and Password");
+                JHelper.ContinuePrompt();
+            }
+            MainMenu();
+        }
+
+        public void Register()
+        {
+            Console.Clear();
+            // Enter Username
+            string username = JHelper.InputString("Enter Username: ", validator: ValidateNewUsername);
+            string password = JHelper.InputPassword("Enter Password: ", validator: ValidateNewPassword);
+
+            Logic.Register(username, password);
+
+            Console.WriteLine("User Registered. You may now log in to your account.");
+            JHelper.ContinuePrompt();
+        }
+
+        public bool ValidateNewUsername(string e)
+        {
+            if(e.Length < 5) { Console.WriteLine("> Username must be atleast 5 characters"); return false; }
+            if (Logic.ExistingUser(e)) { Console.WriteLine("> Username is taken"); return false; }
+
+            return true;
+        }
+
+        public bool ValidateNewPassword(string e)
+        {
+            if (e.Length < 5) { Console.WriteLine("> password must be atleast 5 characters"); return false; }
+
+            return true;
+        }
+
+
+
         public void MainMenu()
         {
             IEnumerable<UserPost> posts = Logic.GetMainFeed();
-            EnumerableDisplay<UserPost> display = new EnumerableDisplay<UserPost>(posts, 5, PostDisplay);
+            EnumerableDisplay<UserPost> display = new EnumerableDisplay<UserPost>(posts, 7, PostDisplay);
 
             while (true)
             {
@@ -47,7 +118,7 @@ namespace CS102L_MP
                 "[1] Create Post " +
                 "[2] Users " +
                 "[3] Communities " +
-                "[X] Logout and Exit");
+                "[X] Logout");
                 string selection = JHelper.InputString("Enter Selection: ", toUpper: true, validator: e => e.In("Q", "W", "1", "2", "3", "X"));
 
                 // Perform selection
@@ -58,7 +129,7 @@ namespace CS102L_MP
                 else if (selection == "3") { CommunitiesMenu(); }
                 else if (selection == "X") { break; }
             }
-            JHelper.ExitPrompt();
+            
         }
 
         private void CreatePost()
@@ -90,7 +161,7 @@ namespace CS102L_MP
         public void UsersMenu()
         {
             IEnumerable<UserPost> posts = Logic.GetUserFeed();
-            EnumerableDisplay<UserPost> display = new EnumerableDisplay<UserPost>(posts, 5, PostDisplay);
+            EnumerableDisplay<UserPost> display = new EnumerableDisplay<UserPost>(posts, 7, PostDisplay);
             while (true)
             {
                 display.items = Logic.GetUserFeed().ToList();
@@ -144,11 +215,13 @@ namespace CS102L_MP
 
         public void UserProfile(User user)
         {
+            IEnumerable<UserPost> posts = user.Posts;
+            EnumerableDisplay<UserPost> display = new EnumerableDisplay<UserPost>(posts, 5, PostDisplay);
             while (true)
             {
-                IEnumerable<Community> communities = Logic.CommonCommunities(user).Take(5);
-
                 Console.Clear();
+                IEnumerable<Community> communities = Logic.CommonCommunities(user).Take(5);
+                display.items = user.Posts.ToList();
 
                 // Display Profile Description
                 Title($"Profile of {user.Name}");
@@ -158,21 +231,23 @@ namespace CS102L_MP
 
                 // Display Posts
                 Console.WriteLine("\nPosts: ");
-                foreach (var post in user.Posts) { PostDisplay(post); }
-
+                display.Display();
                 // Get Input
                 bool followed = Logic.IsFollowed(user);
-                Console.WriteLine();
                 Console.WriteLine(
                     bar() +
-                    $"[1]  {(followed ? "Unfollow User" : "Follow User ")} " +
+                   $"{(display.HasPreviousPage ? "[Q] Previous Page " : "")}" +
+                   $"{(display.HasNextPage ? "[W] Next Page" : "")}\n" +
+                   $"[1]  {(followed ? "Unfollow User" : "Follow User ")} " +
                     "[2] See Followed Communities " +
                     "[3] See Followed Users " +
                     "[X] Back");
-                string selection = JHelper.InputString("Enter Selection: ", toUpper: true, validator: e => e.In("1", "2", "3", "X"));
-                if (selection == "1") { if (followed) { Logic.UnfollowUser(user); } else { Logic.FollowUser(user); }  }
-                if (selection == "2") { SeeFollowedCommunities(user); }
-                if (selection == "3") { SeeFollowedUsers(user); }
+                string selection = JHelper.InputString("Enter Selection: ", toUpper: true, validator: e => e.In("Q", "W", "1", "2", "3", "X"));
+                if (display.HasPreviousPage && selection == "Q") { display.PreviousPage(); }
+                else if (display.HasNextPage && selection == "W") { display.NextPage(); }
+                else if (selection == "1") { if (followed) { Logic.UnfollowUser(user); } else { Logic.FollowUser(user); }  }
+                else if (selection == "2") { SeeFollowedCommunities(user); }
+                else if (selection == "3") { SeeFollowedUsers(user); }
                 else if (selection == "X") { break; }
             }
         }
@@ -306,7 +381,7 @@ namespace CS102L_MP
 
         public void SeeCommunityPosts(Community community)  
         {
-            var display = new EnumerableDisplay<UserPost>(community.Posts, 5, PostDisplay);
+            var display = new EnumerableDisplay<UserPost>(community.Posts, 7, PostDisplay);
             while (true)
             {
                 display.items = community.Posts.ToList();
@@ -404,7 +479,7 @@ namespace CS102L_MP
         {
             Console.Write(
                 bar() +
-                $"   {text}\n" +
+                $"Community: {text}\n" +
                 bar());
         }
     }

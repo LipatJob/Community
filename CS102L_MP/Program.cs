@@ -15,7 +15,7 @@ namespace CS102L_MP
             initialize.Run();
             var logic = new CommunityLogic();
             var display = new CommunityDisplay(logic);
-            display.MainMenu();
+            display.WelcomeScreen();
         }
     }
 }

@@ -197,6 +197,40 @@ namespace JobLib
             return value;
         }
 
+
+        public static string InputPassword(string prompt = "", string parseErrorMessage = "> Please enter a valid value", Func<string, bool> validator = null, bool toUpper = false)
+        {
+            string value = "";
+            // While the input is invalid, loop
+            while (true)
+            {
+                // Display prompt and ask for input
+                Console.Write(prompt);
+
+                // Enter Password
+                while (true)
+                {
+                    var key = Console.ReadKey(true);
+                    if (key.Key == ConsoleKey.Enter)
+                        break;
+                    value += key.KeyChar;
+                }
+                Console.WriteLine();
+                if (toUpper) { value = value.ToUpper(); }
+
+                // Will continue loop if input is invalid
+                if (validator != null && !validator(value))
+                {
+                    continue;
+                }
+                // Will break if the input is parsed and is validated 
+                break;
+            }
+            // If loop breaks, then the value is parsed and valid and can now be returned
+            return value;
+        }
+
+
         public static char InputChar(string prompt = "", string parseErrorMessage = "> Please enter a valid value", Func<char, bool> validator = null)
         {
             char value = char.MinValue;

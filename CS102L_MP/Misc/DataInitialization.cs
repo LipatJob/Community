@@ -229,7 +229,6 @@ namespace CS102L_MP.Misc
             rearwindowowl.Posts.Push(post20); gaming.Posts.Push(post20);
             #endregion
 
-            model.LoggedinUser = lepegen;
         }
     }
 }

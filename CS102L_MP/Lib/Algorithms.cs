@@ -184,6 +184,10 @@ namespace CS102L_MP.Lib
 
         public static IQueue<UserPost> MergeQueues(IQueue<IQueue<UserPost>> queues)
         {
+            if(queues.Count == 0)
+            {
+                return new LinkedQueue<UserPost>();
+            }
             while (queues.Count > 1)
             {
                 queues.Enqueue(MergeQueue(queues.Dequeue(), queues.Dequeue()));
