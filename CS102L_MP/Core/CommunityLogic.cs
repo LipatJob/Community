@@ -193,7 +193,8 @@ namespace CS102L_MP
 
             community.Posts.Push(post);
             LoggedinUser.Posts.Push(post);
-            serializer.SerializePosts(LoggedinUser);
+            serializer.SerializeUserPosts(LoggedinUser);
+            serializer.SerializeCommunityPosts(community);
         }
 
         public bool IsFollowingCommunity(Community community)
@@ -216,12 +217,6 @@ namespace CS102L_MP
         {
             LoggedinUser.Communities.Remove(community);
             serializer.SerializeFollowedCommunities();
-        }
-
-        public void PostToCommunity(Community community, UserPost post)
-        {
-            community.Posts.Push(post);
-            serializer.SerializePosts(LoggedinUser);
         }
 
 

@@ -158,11 +158,7 @@ namespace CS102L_MP
             if (communityNumber == -1) { return; }
             var community = communities[communityNumber - 1];
 
-            // Input text
-            Console.WriteLine();
-            Console.WriteLine($"Posting to \"{community.Name}\": ");
-            string text = JHelper.InputString("Enter Text: ", validator: e => !string.IsNullOrWhiteSpace(e));
-            Logic.PostToCommunity(text, community);
+            PostToCommunity(community);
         }
 
         // USERS MODULE
@@ -172,8 +168,8 @@ namespace CS102L_MP
             EnumerableDisplay<UserPost> display = new EnumerableDisplay<UserPost>(posts, 7, PostDisplay);
             while (true)
             {
-                display.items = Logic.GetUserFeed().ToList();
                 Console.Clear();
+                display.items = Logic.GetUserFeed().ToList();
 
                 Title("Users Feed");
 
@@ -505,7 +501,7 @@ namespace CS102L_MP
         {
             var diff = DateTime.Now - post.DatePosted;
 
-            string diffDate = $"{(diff.Days > 0 ? diff.Days + " days ": "")}{diff.Hours} hours ago";
+            string diffDate = $"{(diff.Days > 0 ? diff.Days + " days ": "")} {(diff.Hours > 0 ? diff.Hours + " hours" : diff.Minutes + " minutes")} ago";
 
             Console.WriteLine(
                 $"{post.User.Name} on {post.Community.Name}:\n" +

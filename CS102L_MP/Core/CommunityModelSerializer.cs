@@ -15,13 +15,19 @@ namespace CS102L_MP.Core
         CommunityModel model;
         Dictionary<string, User> Users;
         Dictionary<string, Community> Communities;
+        Dictionary<int, UserPost> Posts;
+
 
         public CommunityModelSerializer()
         {
-            System.IO.Directory.CreateDirectory(dir+"/data");
+            Directory.CreateDirectory(dir+"/data");
+            Directory.CreateDirectory(dir + "/data/communityposts");
+            Directory.CreateDirectory(dir + "/data/userposts");
+
             model = CommunityModel.GetInstance();
             Users = new Dictionary<string, User>();
             Communities = new Dictionary<string, Community>();
+            Posts = new Dictionary<int, UserPost>();
         }
 
         public void Serialize()
@@ -74,21 +80,38 @@ namespace CS102L_MP.Core
                 }
             }
         }
-        public void SerializePosts(User user) 
+        public void SerializeUserPosts(User user) 
         {
-            using (StreamWriter writer = new StreamWriter(dir + $"/data/userposts-{user.Name}.txt") )
+            using (StreamWriter writer = new StreamWriter(dir + $"/data/userposts/{user.Name}.txt") )
             {
-                foreach (var item in user.Posts)
+                foreach (var item in user.Posts.Reverse())
                 {
                     writer.WriteLine($"{item.ID}|{item.DatePosted}|{item.Community.Name}|{item.Text}");
                 }
             }
         }
+
+        public void SerializeCommunityPosts(Community community)
+        {
+            using (StreamWriter writer = new StreamWriter(dir + $"/data/communityposts/{community.Name}.txt"))
+            {
+                foreach (var item in community.Posts.Reverse())
+                {
+                    writer.WriteLine($"{item.ID}|{item.DatePosted}|{item.Community.Name}|{item.Text}");
+                }
+            }
+        }
+
+
         public void SerializeAllPosts()
         {
             foreach (var user in model.Users)
             {
-                SerializePosts(user);
+                SerializeUserPosts(user);
+            }
+            foreach (var community in model.Communities.Inorder())
+            {
+                SerializeCommunityPosts(community);
             }
         }
 
@@ -140,9 +163,10 @@ namespace CS102L_MP.Core
                 while (!writer.EndOfStream)
                 {
                     var values = writer.ReadLine().Split('|');
+                    if (values[1] == "") { continue; }
                     var user = Users[values[0]];
                     foreach (var community in values[1].Split(','))
-                    {
+                    {   
                         user.Communities.Insert(Communities[community]);
                     }
                 }
@@ -165,26 +189,50 @@ namespace CS102L_MP.Core
                 }
             }
         }
-        public void DeserializePosts(User user)
+        public void DeserializeUserPosts(User user)
         {
-            using (var writer = new StreamWriter(dir+$"/data/userposts-{user.Name}.txt", true)) { }; // Create if doesn't exist
-            using (var reader = new StreamReader(dir + $"/data/userposts-{user.Name}.txt"))
+            using (var writer = new StreamWriter(dir+$"/data/userposts/{user.Name}.txt", true)) { }; // Create if doesn't exist
+            using (var reader = new StreamReader(dir + $"/data/userposts/{user.Name}.txt"))
             {
 
                 while (!reader.EndOfStream)
                 {
                     var values = reader.ReadLine().Split('|');
                     var post = new UserPost() { ID = int.Parse(values[0]), DatePosted = DateTime.Parse(values[1]), Community = Communities[values[2]], Text = values[3], User = user };
-                    Communities[values[2]].Posts.Push(post);
+                    Posts[post.ID] = post;
                     user.Posts.Push(post);
+
                 }
             }
         }
+
+
+
+        public void DeserializeCommunityPosts(Community community)
+        {
+            using (var writer = new StreamWriter(dir + $"/data/communityposts/{community.Name}.txt", true)) { }; // Create if doesn't exist
+            using (var reader = new StreamReader(dir + $"/data/communityposts/{community.Name}.txt"))
+            {
+
+                while (!reader.EndOfStream)
+                {
+                    var values = reader.ReadLine().Split('|');
+                    Communities[values[2]].Posts.Push(Posts[int.Parse(values[0])]);
+                }
+            }
+        }
+
+
+
         public void DeserializeAllPosts()
         { // Deserialize Posts
             foreach (var user in model.Users)
             {
-                DeserializePosts(user);
+                DeserializeUserPosts(user);
+            }
+            foreach (var community in model.Communities.Inorder())
+            {
+                DeserializeCommunityPosts(community);
             }
         }
     }
