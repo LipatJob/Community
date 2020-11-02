@@ -8,8 +8,8 @@ namespace CS102L_MP
 {
     class EnumerableDisplay<T>
     {
-        IList<T> items;
-        Action<T> display;
+        public IList<T> items { get; set; }
+        public Action<T> display { get; set; }
 
         public EnumerableDisplay(IEnumerable<T> items, int itemsPerPage, Action<T> display)
         {

@@ -227,5 +227,10 @@ namespace CS102L_MP
         {
             LoggedinUser.Communities.Insert(community);
         }
+
+        internal IEnumerable<Community> FollowedCommunities()
+        {
+            return LoggedinUser.Communities.Inorder();
+        }
     }
 }
