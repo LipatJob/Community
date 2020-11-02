@@ -128,15 +128,27 @@ namespace CS102L_MP
             return maxCommunitites - count;
         }
 
-        public void SearchUser(string key)
+        public bool IsFollowed(User user)
         {
-            var users = Users.ToList();
-            Algorithms.QuickSort(users, UserSearchComparator);
+            return LoggedinUser.FollowedUsers.Contains(user);
         }
 
-        private int UserSearchComparator(User user1, User user2)
+        public IList<User> SearchUser(string key)
         {
-            return Algorithms.EditDistance(user1.Name, user2.Name);
+            var users = Users.ToList();
+            IList<Tuple<User, int>> usersIndex = new List<Tuple<User, int>>();
+            foreach (var user in users)
+            {
+                if (user == LoggedinUser) { continue; }
+                usersIndex.Add(Tuple.Create(user, Algorithms.EditDistance(key, user.Name)));
+            }
+            Algorithms.QuickSort(usersIndex, UserSearchComparator);
+            return usersIndex.Select(e=>e.Item1).ToList();
+        }
+
+        private int UserSearchComparator(Tuple<User, int> user1, Tuple<User, int> user2)
+        {
+            return user1.Item2.CompareTo(user2.Item2);
         }
 
         public void SeeCommunities()

@@ -26,7 +26,7 @@ namespace CS102L_MP
         public void MainMenu()
         {
             IEnumerable<UserPost> posts = Logic.GetMainFeed();
-            EnumerableDisplay<UserPost> display = new EnumerableDisplay<UserPost>(posts, 100, UserPostDisplay);
+            EnumerableDisplay<UserPost> display = new EnumerableDisplay<UserPost>(posts, 100, PostDisplay);
 
             while (true)
             {
@@ -37,7 +37,7 @@ namespace CS102L_MP
 
                 // Display and Input Selection
                 Console.WriteLine(
-                 "-----------------------------------------------------\n"+
+                 bar() +
                 $"{(display.HasPreviousPage ? "[Q] Previous Page " : "")}" +
                 $"{(display.HasNextPage ? "[W] Next page \n" : "")}" +
                 "[1] Users " +
@@ -57,17 +57,26 @@ namespace CS102L_MP
 
 
 
+        public string PostDisplay(UserPost post)
+        {
+            Console.WriteLine(
+                $"{post.User.Name} posted to {post.Community.Name} on {post.DatePosted.ToShortDateString()} \n" +
+                $"{post.Text}\n");
+            return "";
+        }
+
         // USERS MODULE
         public void UsersMenu()
         {
             IEnumerable<UserPost> posts = Logic.GetUserFeed();
-            EnumerableDisplay<UserPost> display = new EnumerableDisplay<UserPost>(posts, 10, UserPostDisplay);
+            EnumerableDisplay<UserPost> display = new EnumerableDisplay<UserPost>(posts, 10, PostDisplay);
             while (true)
             {
                 Console.Clear();
+
                 display.Display();
-                Console.WriteLine("-----------------------------------------------------");
                 Console.WriteLine(
+                bar() +
                 $"{(display.HasPreviousPage ? "[Q] Previous Page " : "")}" +
                 $"{(display.HasNextPage ? "[W] Next Page \n" : "")}" +
                 "[1] See Recommended Users " +
@@ -87,14 +96,6 @@ namespace CS102L_MP
             
         }
 
-        public string UserPostDisplay(UserPost post)
-        {
-            Console.WriteLine(
-                $"{post.User.Name} posted to {post.Community.Name} on {post.DatePosted.ToShortDateString()} \n" +
-                $"{post.Text}\n");
-            return "";
-        }
-
         public void SeeRecommendedUsers()
         {
             IList<User> users = Logic.GetRecommendedUsers().ToList();
@@ -102,24 +103,19 @@ namespace CS102L_MP
             {
                 Console.Clear();
 
-                int i = 1;
-                foreach (var user in users)
-                {
-                    Console.WriteLine($"{i}. {user.Name}");
-                    i++;
-                }
+                // Displau Users
+                DisplayEnumeratedList(users, e => e.Name);
 
                 Console.WriteLine(
+                bar() +
                 "[1] View User Profile" +
                 "[X] Back");
-                string selection = JHelper.InputString("Enter Selection (-1 to go Back): ", validator: e => e.In("1", "X"));
+                string selection = JHelper.InputString("Enter Selection: ", toUpper:true,validator: e => e.In("1", "X"));
                 if (selection == "1")
                 {
-                    int userNumber = JHelper.InputInt("Enter Number: ", validator: e => e > 0 && e <= users.Count);
-                    if(userNumber != -1)
-                    {
-                        UserProfile(users[userNumber - 1]);
-                    }
+                    int userNumber = JHelper.InputInt("Enter Number: ", validator: e => e == -1 || (e > 0 && e <= users.Count));
+                    if(userNumber == -1) { continue; }
+                    UserProfile(users[userNumber - 1]);
                 }
                 else if (selection == "X") { break; }
                 else { Console.WriteLine("Please Enter a Valid Selection."); }
@@ -132,78 +128,56 @@ namespace CS102L_MP
             while (true)
             {
                 Console.Clear();
+
+                Console.WriteLine($"Profile of {user.Name}");
+
                 // Display Common Communities
                 Console.WriteLine("Common Communities: " + string.Join(", ", communities.Select(e => e.Name)));
 
-                Console.WriteLine("\nPosts: ");
                 // Display Posts
-                foreach (var post in user.Posts)
-                {
-                    Console.WriteLine(
-                        $"{post.User.Name}/{post.Community.Name}/{post.DatePosted.ToShortDateString()}\n" +
-                        $"{post.Text}");
-                }
+                Console.WriteLine("\nPosts: ");
+                foreach (var post in user.Posts) { PostDisplay(post); Console.WriteLine(); }
 
-                bool followed = false;
-                Console.WriteLine("-----------------------------------------------------");
-
-                if (followed)
-                {
-                    Console.WriteLine(
-                    "[1] Unfollow User " +
+                // Get Input
+                bool followed = Logic.IsFollowed(user);
+                Console.WriteLine();
+                Console.WriteLine(
+                    bar() +
+                    $"[1]  {(followed ? "Unfollow User" : "Follow User ")}" +
                     "[2] See Followed Communities " +
                     "[3] See Followed Users " +
                     "[X] Back");
-                    string selection = JHelper.InputString("Enter Selection: ");
-                    if (selection == "1") { Logic.UnfollowUser(user); }
-                    if (selection == "2") { SeeFollowedCommunities(user); }
-                    if (selection == "3") { SeeFollowedUsers(user); }
-                    else if (selection == "X") { break; }
-                }
-                else
-                {
-                    Console.WriteLine(
-                    "[1] Follow User " +
-                    "[2] See Followed Communities" +
-                    "[3] See Followed Users " +
-                    "[X] Back");
-                    string selection = JHelper.InputString("Enter Selection: ");
-                    if (selection == "1") { }
-                    else if (selection == "X") { break; }
-                }
-            
-               
+                string selection = JHelper.InputString("Enter Selection: ");
+                if (selection == "1") { if (followed) { Logic.UnfollowUser(user); } else { Logic.FollowUser(user); }  }
+                if (selection == "2") { SeeFollowedCommunities(user); }
+                if (selection == "3") { SeeFollowedUsers(user); }
+                else if (selection == "X") { break; }
             }
         }
 
         private void SeeFollowedCommunities(User user)
         {
+            IList<Community> followedCommunities = user.Communities.Inorder().ToList();
             while (true)
             {
-                IList<Community> followedCommunities = user.Communities.Inorder().ToList();
+                Console.Clear();
 
                 // Dispay List of Communities
-                int i = 1;
-                foreach (var followedCommunity in followedCommunities)
-                {
-                    Console.WriteLine($"{i}. {followedCommunity.Name}");
-                    i++;
-                }
+                DisplayEnumeratedList(followedCommunities, e => e.Name);
 
                 // Input Selection
                 Console.WriteLine(
+                bar()+
                 "[1] Select and View Community " +
                 "[X] Back");
-                string selection = JHelper.InputString("Enter Selection (-1 to go Back): ");
+                string selection = JHelper.InputString("Enter Selection: ", toUpper: true, validator: e => e.In("1", "X"));
 
                 // Perform Action
                 if (selection == "1")
                 {
-                    int userNumber = JHelper.InputInt("Enter Number: ", validator: e => e > 0 && e <= followedCommunities.Count);
-                    if (userNumber != -1)
-                    {
-                        SeeCommunityPosts(followedCommunities[userNumber - 1]);
-                    }
+                    int userNumber = JHelper.InputInt("Enter Number (-1 to go Back):: ", validator: e => e == -1 || (e > 0 && e <= followedCommunities.Count));
+                    if (userNumber == -1) { break; }
+                    SeeCommunityPosts(followedCommunities[userNumber - 1]);
                 }
                 else if (selection == "X") { break; }
                 else { Console.WriteLine("Please Enter a Valid Selection."); }
@@ -212,68 +186,57 @@ namespace CS102L_MP
 
         public void SearchUsers()
         {
-            string key = JHelper.InputString("Enter Search Key: ");
             while (true)
             {
-                IList<User> users = null;
-                
+                string key = JHelper.InputString("Enter Search Key: ");
+                IList<User> users = Logic.SearchUser(key);
+                Console.Clear();
+
                 // Display list of users
-                int i = 0;
-                foreach (var user in users)
-                {
-                    Console.WriteLine($"{i}. {user.Name}");
-                    i++;
-                }
+                DisplayEnumeratedList(users, e => e.Name);
 
                 // Input Selection
                 Console.WriteLine(
-                "1. View User Profile\n" +
-                "X. Back");
-                string selection = JHelper.InputString("Enter Selection (-1 to go Back): ");
+                bar()+
+                "[1] View User Profile " +
+                "[X] Back");
+                string selection = JHelper.InputString("Enter Selection: ", toUpper: true ,validator: e=>e.In("1", "X"));
 
                 // Perform Action
                 if (selection == "1")
                 {
-                    int userNumber = JHelper.InputInt("Enter Number: ", validator: e => e > 0 && e <= users.Count);
-                    if (userNumber != -1)
-                    {
-                        UserProfile(users[userNumber - 1]);
-                    }
+                    int userNumber = JHelper.InputInt("Enter Number (-1 to go Back): ", validator: e => e == -1 || (e > 0 && e <= users.Count));
+                    if (userNumber == - 1) { continue; }
+                    UserProfile(users[userNumber - 1]);
                 }
                 else if (selection == "X") { break; }
-                else { Console.WriteLine("Please Enter a Valid Selection."); }
             }
 
         }
 
         public void SeeFollowedUsers(User user)
         {
-            while(true)
+            IList<User> followedUsers = user.FollowedUsers.ToList();
+            while (true)
             {
-                IList<User> followedUsers = null;
+                Console.Clear();
 
                 // Dispay List of Users
-                int i = 0;
-                foreach (var followedUser in followedUsers)
-                {
-                    Console.WriteLine($"{i}. {followedUser.Name}");
-                    i++;
-                }
+                DisplayEnumeratedList(followedUsers, e => e.Name);
 
                 // Input Selection
                 Console.WriteLine(
-                "1. View User Profile\n" +
-                "X. Back");
+                bar()+
+                "[1] Select User " +
+                "[X] Back");
                 string selection = JHelper.InputString("Enter Selection (-1 to go Back): ");
 
                 // Perform Action
                 if (selection == "1")
                 {
                     int userNumber = JHelper.InputInt("Enter Number: ", validator: e => e > 0 && e <= followedUsers.Count);
-                    if (userNumber != -1)
-                    {
-                        UserProfile(followedUsers[userNumber - 1]);
-                    }
+                    if(userNumber == -1) { continue; }
+                    UserProfile(followedUsers[userNumber - 1]);
                 }
                 else if (selection == "X") { break; }
                 else { Console.WriteLine("Please Enter a Valid Selection."); }
@@ -356,6 +319,23 @@ namespace CS102L_MP
                 else if (selection == "X") { break; }
                 else { Console.WriteLine("Please Enter a Valid Selection."); }
             }
+        }
+    
+
+        // Helpers
+        private void DisplayEnumeratedList<T>(IEnumerable<T> values, Func<T, string> display)
+        {
+            int i = 1;
+            foreach (var item in values)
+            {
+                Console.WriteLine($"[{i}] {display(item)}");
+                i++;
+            }
+        }
+
+        private string bar()
+        {
+            return "-----------------------------------------------------\n";
         }
     }
 }
