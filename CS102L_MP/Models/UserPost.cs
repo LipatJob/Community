@@ -9,6 +9,13 @@ namespace CS102L_MP.Models
 {
     class UserPost
     {
+        public static int Count = 0;
+
+        public UserPost()
+        {
+            Count++;
+        }
+            
         public int ID { get; set; }
         public DateTime DatePosted { get; set; }
         public string Text { get; set; }

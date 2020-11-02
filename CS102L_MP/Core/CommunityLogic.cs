@@ -24,6 +24,8 @@ namespace CS102L_MP
             LoggedinUser = CommunityModel.GetInstace().LoggedinUser;
         }
 
+        // User Module
+
         public void Login()
         {
             bool loggedin = false;
@@ -88,8 +90,6 @@ namespace CS102L_MP
             return Algorithms.MergePosts(posts);
         }
 
-
-
         public void FollowUser(User user)
         {
             Users.AddEdge(LoggedinUser, user, 0);
@@ -151,6 +151,42 @@ namespace CS102L_MP
             return user1.Item2.CompareTo(user2.Item2);
         }
 
+
+        // Community Module
+
+        public IEnumerable<Community> GetCommunities()
+        {
+            return Communities.Inorder();
+        }
+
+        public IEnumerable<Community> GetFolowedCommunities()
+        {
+            return LoggedinUser.Communities.Inorder();
+        }
+
+        public void PostToCommunity(string text, Community community)
+        {
+            var post = new UserPost();
+            post.ID = UserPost.Count;
+            post.Text = text;
+            post.DatePosted = DateTime.Now;
+            post.Community = community;
+            post.User = LoggedinUser;
+
+            community.Posts.Push(post);
+            LoggedinUser.Posts.Push(post);
+        }
+
+        public bool IsFollwingCommunity(Community community)
+        {
+            return LoggedinUser.Communities.Contains(community);
+        }
+
+        public bool HasCommunity(string name)
+        {
+            return Communities.Retrieve(name, (e,f)=> e.CompareTo(f.Name)) != null;
+        }
+
         public void SeeCommunities()
         {
             var communities = Communities.Inorder();
@@ -180,6 +216,16 @@ namespace CS102L_MP
         {
             Community community = new Community(); ;
             Communities.Insert(community);
+        }
+
+        internal void UnfollowCommunity(Community community)
+        {
+            LoggedinUser.Communities.Remove(community);
+        }
+
+        internal void FollowCommunity(Community community)
+        {
+            LoggedinUser.Communities.Insert(community);
         }
     }
 }

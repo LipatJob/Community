@@ -40,21 +40,39 @@ namespace CS102L_MP
                  bar() +
                 $"{(display.HasPreviousPage ? "[Q] Previous Page " : "")}" +
                 $"{(display.HasNextPage ? "[W] Next page" : "")}\n" +
-                "[1] Users " +
-                "[2] Communities " +
+                "[1] Create Post " +
+                "[2] Users " +
+                "[3] Communities " +
                 "[X] Logout and Exit");
                 string selection = JHelper.InputString("Enter Selection: ", toUpper: true, validator: e => e.In("Q", "W", "1", "2", "3", "X"));
 
                 // Perform selection
                 if (display.HasPreviousPage && selection == "Q") { display.PreviousPage();  }
                 else if (display.HasNextPage && selection == "W") { display.NextPage();  }
-                else if (selection == "1") { UsersMenu(); }
-                else if (selection == "2") { CommunitiesMenu(); }
+                else if (selection == "1") { CreatePost(); }
+                else if (selection == "2") { UsersMenu(); }
+                else if (selection == "3") { CommunitiesMenu(); }
                 else if (selection == "X") { break; }
             }
             JHelper.ExitPrompt();
         }
 
+        private void CreatePost()
+        {
+            IList<Community> communities = Logic.GetFolowedCommunities().ToList();
+
+            // Display Communities
+            DisplayEnumeratedList(communities, e => e.Name);
+
+            // Input Community
+            int communityNumber = JHelper.InputInt("Enter Number (-1 to go Back): ", validator: e => e == -1 || (e > 0 && e <= communities.Count));
+            if (communityNumber == -1) { return; }
+            var community = communities[communityNumber - 1];
+
+            // Input text
+            string text = JHelper.InputString("Enter Text: ", validator: e => !string.IsNullOrWhiteSpace(e));
+            Logic.PostToCommunity(text, community);
+        }
 
         // USERS MODULE
         public void UsersMenu()
@@ -226,7 +244,7 @@ namespace CS102L_MP
                 // Perform Action
                 if (selection == "1")
                 {
-                    int userNumber = JHelper.InputInt("Enter Number (-1 to go Back): ", validator: e => e > 0 && e <= followedUsers.Count);
+                    int userNumber = JHelper.InputInt("Enter Number (-1 to go Back): ", validator: e => e == -1 || (e > 0 && e <= followedUsers.Count));
                     if(userNumber == -1) { continue; }
                     UserProfile(followedUsers[userNumber - 1]);
                 }
@@ -240,48 +258,43 @@ namespace CS102L_MP
         // COMMUNITIES MODULE
         void CommunitiesMenu()
         {
+            IEnumerable<UserPost> posts = Logic.GetCommunityFeed();
+            EnumerableDisplay<UserPost> display = new EnumerableDisplay<UserPost>(posts, 5, PostDisplay);
             while (true)
             {
                 Console.Clear();
-                SeeCommunitiesFeed();
-                Console.WriteLine("-----------------------------------------------------");
+
+                display.Display();
                 Console.WriteLine(
-                "[Q] Scroll Up " +
-                "[W] Scroll Down\n" +
+                bar()+
+                $"{(display.HasPreviousPage ? "[Q] Previous Page " : "")}" +
+                $"{(display.HasNextPage ? "[W] Next Page \n" : "")}" +
                 "[1] See Communities " +
                 "[2] See Followed Communities " +
                 "[X] Back");
                 string selection = JHelper.InputString("Enter Selection: ", toUpper: true);
 
-                if (selection == "1") { }
-                if (selection == "2") { }
+                if (display.HasPreviousPage && selection == "Q") { display.PreviousPage(); }
+                else if (display.HasNextPage && selection == "W") { display.NextPage(); }
+                else if (selection == "1") { SeeCommunities(); }
+                else if (selection == "2") { SeeFollowedCommunities(); }
                 else if (selection == "X") { break; }
                 else { Console.WriteLine("Please Enter a Valid Selection."); }
             }
         }
 
-        public void SeeCommunitiesFeed()
-        {
-            IEnumerable<UserPost> posts = Logic.GetCommunityFeed(); ;
-            foreach (var post in posts)
-            {
-                Console.WriteLine(
-                    $"{post.User.Name}/{post.Community.Name}/{post.DatePosted.ToShortDateString()}" +
-                    $"{post.Text}");
-            }
-        }
-
         public void SeeCommunities()
         {
+
+            var communities = Logic.GetCommunities().ToList();
             while (true)
             {
-                int i = 0;
-                IList<Community> communities = null;
-                foreach (var community in communities)
-                {
-                    Console.WriteLine($"{i} {community.Name}");
-                }
-                Console.WriteLine("[1] Select Community [X] Back");
+                Console.Clear();
+
+                DisplayEnumeratedList(communities, e => e.Name);
+                int communityNumber = JHelper.InputInt("Enter Number (-1 to go Back): ", validator: e => e == -1 || (e > 0 && e <= communities.Count));
+                if (communityNumber == -1) { break; }
+                SeeCommunityPosts(communities[communityNumber - 1]);
             }
         }
 
@@ -289,30 +302,48 @@ namespace CS102L_MP
         {
             while (true)
             {
-                foreach (var post in community.Posts)
-                {
-                    Console.WriteLine(
-                    $"{post.User.Name}/{post.Community.Name}/{post.DatePosted.ToShortDateString()}" +
-                    $"{post.Text}");
-                }
+                Console.Clear();
 
-                bool following = false;
-                string followSelection = following ? "Unfollow" : "Follow";
+                var display = new EnumerableDisplay<UserPost>(community.Posts, 5, PostDisplay);
+                display.Display();
+
+                bool following = Logic.IsFollwingCommunity(community);
                 Console.WriteLine(
-
-                $"{community.Name}:\n" +
-                $"[Q] Scroll Up " +
-                $"[W] Scroll Down\n" +
-                $"[1] {followSelection} " +
+                bar() +
+                $"{(display.HasPreviousPage ? "[Q] Previous Page " : "")}" +
+                $"{(display.HasNextPage ? "[W] Next page" : "")}\n" +
+                $"[1] {(following ? "Unfollow" : "Follow")} " +
+                $"[2] Post " +
                  "[X] Back");
                 
-                string selection = JHelper.InputString("Enter Selection: ");
-                if (selection == "1") { }
+                string selection = JHelper.InputString("Enter Selection: ", toUpper: true, validator: e=>e.In("1", "2" ,"X"));
+                if (selection == "1") 
+                {
+                    if (following)
+                    {
+                        Logic.UnfollowCommunity(community);
+                    }
+                    else
+                    {
+                        Logic.FollowCommunity(community);
+                    }
+                }
+                else if (selection == "2") { PostToCommunity(community);  }
                 else if (selection == "X") { break; }
-                else { Console.WriteLine("Please Enter a Valid Selection."); }
             }
         }
-    
+
+        private void PostToCommunity(Community community)
+        {
+            // Input text
+            string text = JHelper.InputString("Enter Text: ", validator: e => !string.IsNullOrWhiteSpace(e));
+            Logic.PostToCommunity(text, community);
+        }
+
+        public void SeeFollowedCommunities()
+        {
+
+        }
 
         // Helpers
         private void DisplayEnumeratedList<T>(IEnumerable<T> values, Func<T, string> display)
