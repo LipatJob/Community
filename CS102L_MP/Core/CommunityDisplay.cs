@@ -155,9 +155,10 @@ namespace CS102L_MP
                     "[3] See Followed Users " +
                     "[X] Back");
                     string selection = JHelper.InputString("Enter Selection: ");
-                    if (selection == "1") { }
+                    if (selection == "1") { Logic.UnfollowUser(user); }
+                    if (selection == "2") { SeeFollowedCommunities(user); }
+                    if (selection == "3") { SeeFollowedUsers(user); }
                     else if (selection == "X") { break; }
-                    else { Console.WriteLine("Please Enter a Valid Selection."); }
                 }
                 else
                 {
@@ -169,10 +170,43 @@ namespace CS102L_MP
                     string selection = JHelper.InputString("Enter Selection: ");
                     if (selection == "1") { }
                     else if (selection == "X") { break; }
-                    else { Console.WriteLine("Please Enter a Valid Selection."); }
                 }
             
                
+            }
+        }
+
+        private void SeeFollowedCommunities(User user)
+        {
+            while (true)
+            {
+                IList<Community> followedCommunities = user.Communities.Inorder().ToList();
+
+                // Dispay List of Communities
+                int i = 1;
+                foreach (var followedCommunity in followedCommunities)
+                {
+                    Console.WriteLine($"{i}. {followedCommunity.Name}");
+                    i++;
+                }
+
+                // Input Selection
+                Console.WriteLine(
+                "[1] Select and View Community " +
+                "[X] Back");
+                string selection = JHelper.InputString("Enter Selection (-1 to go Back): ");
+
+                // Perform Action
+                if (selection == "1")
+                {
+                    int userNumber = JHelper.InputInt("Enter Number: ", validator: e => e > 0 && e <= followedCommunities.Count);
+                    if (userNumber != -1)
+                    {
+                        SeeCommunityPosts(followedCommunities[userNumber - 1]);
+                    }
+                }
+                else if (selection == "X") { break; }
+                else { Console.WriteLine("Please Enter a Valid Selection."); }
             }
         }
 

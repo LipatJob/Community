@@ -11,7 +11,6 @@ namespace CS102L_MP
         IList<T> items;
         Func<T, string> display;
 
-
         public EnumerableDisplay(IEnumerable<T> items, int itemsPerPage, Func<T, string> display)
         {
             this.items = items.ToList();
