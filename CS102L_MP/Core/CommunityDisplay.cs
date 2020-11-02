@@ -26,7 +26,7 @@ namespace CS102L_MP
         public void MainMenu()
         {
             IEnumerable<UserPost> posts = Logic.GetMainFeed();
-            EnumerableDisplay<UserPost> display = new EnumerableDisplay<UserPost>(posts, 100, PostDisplay);
+            EnumerableDisplay<UserPost> display = new EnumerableDisplay<UserPost>(posts, 5, PostDisplay);
 
             while (true)
             {
@@ -39,7 +39,7 @@ namespace CS102L_MP
                 Console.WriteLine(
                  bar() +
                 $"{(display.HasPreviousPage ? "[Q] Previous Page " : "")}" +
-                $"{(display.HasNextPage ? "[W] Next page \n" : "")}" +
+                $"{(display.HasNextPage ? "[W] Next page" : "")}\n" +
                 "[1] Users " +
                 "[2] Communities " +
                 "[X] Logout and Exit");
@@ -56,14 +56,11 @@ namespace CS102L_MP
         }
 
 
-
-        
-
         // USERS MODULE
         public void UsersMenu()
         {
             IEnumerable<UserPost> posts = Logic.GetUserFeed();
-            EnumerableDisplay<UserPost> display = new EnumerableDisplay<UserPost>(posts, 10, PostDisplay);
+            EnumerableDisplay<UserPost> display = new EnumerableDisplay<UserPost>(posts, 5, PostDisplay);
             while (true)
             {
                 Console.Clear();
@@ -333,12 +330,15 @@ namespace CS102L_MP
             return "--------------------------------------------------------------------------\n";
         }
 
-        public string PostDisplay(UserPost post)
+        public void PostDisplay(UserPost post)
         {
+            var diff = DateTime.Now - post.DatePosted;
+
+            string diffDate = $"{(diff.Days > 0 ? diff.Days + " days ": "")}{diff.Hours} hours ago";
+
             Console.WriteLine(
-                $"{post.User.Name} posted to {post.Community.Name} on {post.DatePosted.ToShortDateString()} \n" +
-                $"{post.Text}\n");
-            return "";
+                $"{post.User.Name} on {post.Community.Name}:\n" +
+                $"{post.Text} ({diffDate}) \n");
         }
     }
 }

@@ -9,19 +9,19 @@ namespace CS102L_MP
     class EnumerableDisplay<T>
     {
         IList<T> items;
-        Func<T, string> display;
+        Action<T> display;
 
-        public EnumerableDisplay(IEnumerable<T> items, int itemsPerPage, Func<T, string> display)
+        public EnumerableDisplay(IEnumerable<T> items, int itemsPerPage, Action<T> display)
         {
             this.items = items.ToList();
             ItemsPerPage = itemsPerPage;
             this.display = display;
-            CurrentPage = 1;
+            CurrentPage = 0;
         }
 
         public void Display()
         {
-            for (int i = CurrentPage; i < items.Count && i < CurrentPage + ItemsPerPage; i++)
+            for (int i = (CurrentPage * ItemsPerPage); i < items.Count && i < (CurrentPage * ItemsPerPage) + ItemsPerPage; i++)
             {
                 display(items[i]);
             }
@@ -47,8 +47,8 @@ namespace CS102L_MP
             CurrentPage--;
         }
 
-        public bool HasNextPage { get { return CurrentPage * ItemsPerPage < items.Count(); } }
-        public bool HasPreviousPage { get { return CurrentPage > 1;  } }
+        public bool HasNextPage { get { return CurrentPage < (items.Count()/ItemsPerPage); } }
+        public bool HasPreviousPage { get { return CurrentPage > 0;  } }
         public int ItemsPerPage { get;  }
         public int CurrentPage { get; private set; }
     }

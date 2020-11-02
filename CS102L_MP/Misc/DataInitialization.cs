@@ -168,64 +168,64 @@ namespace CS102L_MP.Misc
 
             // Add Posts to Users
             #region
-            var post1 = new UserPost() { ID = 0, DatePosted = DateTime.Parse("10/11/2020"), Text = "Welcome to Community", Community = announcements, User = lepegen };
+            var post1 = new UserPost() { ID = 0, DatePosted = DateTime.Parse("9/11/2020"), Text = "Welcome to Community", Community = announcements, User = lepegen };
             lepegen.Posts.Push(post1); announcements.Posts.Push(post1);
 
-            var post2 = new UserPost() { ID = 1, DatePosted = DateTime.Parse("10/12/2020"), Text = "E", Community = funny, User = citylightsbird };
+            var post2 = new UserPost() { ID = 1, DatePosted = DateTime.Parse("9/12/2020"), Text = "E", Community = funny, User = citylightsbird };
             citylightsbird.Posts.Push(post2); funny.Posts.Push(post2);
             
-            var post3 = new UserPost() { ID = 2, DatePosted = DateTime.Parse("10/13/2020"), Text = "What's", Community = askcommunity, User = cucumberapple };
+            var post3 = new UserPost() { ID = 2, DatePosted = DateTime.Parse("9/13/2020"), Text = "What's", Community = askcommunity, User = cucumberapple };
             cucumberapple.Posts.Push(post3); askcommunity.Posts.Push(post3);
             
-            var post4 = new UserPost() { ID = 3, DatePosted = DateTime.Parse("10/14/2020"), Text = "Xbox Series X Unboxing", Community = gaming, User = pathsofgloryfog };
+            var post4 = new UserPost() { ID = 3, DatePosted = DateTime.Parse("9/14/2020"), Text = "Xbox Series X Unboxing", Community = gaming, User = pathsofgloryfog };
             pathsofgloryfog.Posts.Push(post4); gaming.Posts.Push(post4);
             
-            var post5 = new UserPost() { ID = 4, DatePosted = DateTime.Parse("10/15/2020"), Text = "It's my dog's 3rd birthday today :D", Community = aww, User = runningstardust };
+            var post5 = new UserPost() { ID = 4, DatePosted = DateTime.Parse("9/15/2020"), Text = "It's my dog's 3rd birthday today :D", Community = aww, User = runningstardust };
             runningstardust.Posts.Push(post5); aww.Posts.Push(post5);
             
-            var post6 = new UserPost() { ID = 5, DatePosted = DateTime.Parse("10/15/2020"), Text = "The Beatles - Here Comes the Sun", Community = music, User = lastradawalker };
+            var post6 = new UserPost() { ID = 5, DatePosted = DateTime.Parse("9/15/2020"), Text = "The Beatles - Here Comes the Sun", Community = music, User = lastradawalker };
             lastradawalker.Posts.Push(post6); music.Posts.Push(post6);
             
-            var post7 = new UserPost() { ID = 6, DatePosted = DateTime.Parse("10/16/2020"), Text = "Water discoverd on the moon", Community = science, User = runningstardust };
+            var post7 = new UserPost() { ID = 6, DatePosted = DateTime.Parse("9/16/2020"), Text = "Water discoverd on the moon", Community = science, User = runningstardust };
             runningstardust.Posts.Push(post7); science.Posts.Push(post7);
             
-            var post8 = new UserPost() { ID = 7, DatePosted = DateTime.Parse("10/17/2020"), Text = "Typhoon hit philippines devasted", Community = worldnews, User = broccolipotato };
+            var post8 = new UserPost() { ID = 7, DatePosted = DateTime.Parse("9/17/2020"), Text = "Typhoon hit philippines devasted", Community = worldnews, User = broccolipotato };
             broccolipotato.Posts.Push(post8); worldnews.Posts.Push(post8);
             
-            var post9 = new UserPost() { ID = 8, DatePosted = DateTime.Parse("10/18/2020"), Text = "TIL Socrates taught Plato, Plato taught Aristotle, and Aristotle taught Alexander the Great", Community = todayilearned, User = bridgebaseball };
+            var post9 = new UserPost() { ID = 8, DatePosted = DateTime.Parse("9/18/2020"), Text = "TIL Socrates taught Plato, Plato taught Aristotle, and Aristotle taught Alexander the Great", Community = todayilearned, User = bridgebaseball };
             bridgebaseball.Posts.Push(post9); todayilearned.Posts.Push(post9);
             
-            var post10 = new UserPost() { ID = 9, DatePosted = DateTime.Parse("10/19/2020"), Text = "Hot Fuzz(2007)", Community = movies, User = spiralshapefig };
+            var post10 = new UserPost() { ID = 9, DatePosted = DateTime.Parse("9/19/2020"), Text = "Hot Fuzz(2007)", Community = movies, User = spiralshapefig };
             spiralshapefig.Posts.Push(post10); movies.Posts.Push(post10);
             
-            var post11 = new UserPost() { ID = 10, DatePosted = DateTime.Parse("11/11/2020"), Text = "IPhone X Released", Community = tech, User = marsexpresscane };
+            var post11 = new UserPost() { ID = 10, DatePosted = DateTime.Parse("10/11/2020"), Text = "IPhone X Released", Community = tech, User = marsexpresscane };
             marsexpresscane.Posts.Push(post11); tech.Posts.Push(post11);
             
-            var post12 = new UserPost() { ID = 11, DatePosted = DateTime.Parse("11/13/2020"), Text = "You have proberly seen more of the moons surface than you have earth's", Community = showerthoughts, User = walruspandabird };
+            var post12 = new UserPost() { ID = 11, DatePosted = DateTime.Parse("10/13/2020"), Text = "You have proberly seen more of the moons surface than you have earth's", Community = showerthoughts, User = walruspandabird };
             walruspandabird.Posts.Push(post12); showerthoughts.Posts.Push(post12);
             
-            var post13 = new UserPost() { ID = 12, DatePosted = DateTime.Parse("11/15/2020"), Text = "I taught a wolf to meditate Now he’s aware wolf", Community = jokes, User = rearwindowowl };
+            var post13 = new UserPost() { ID = 12, DatePosted = DateTime.Parse("10/15/2020"), Text = "I taught a wolf to meditate Now he’s aware wolf", Community = jokes, User = rearwindowowl };
             rearwindowowl.Posts.Push(post13); jokes.Posts.Push(post13);
             
-            var post14 = new UserPost() { ID = 13, DatePosted = DateTime.Parse("11/16/2020"), Text = "1984 George Orwell", Community = books, User = owlsilverberry };
+            var post14 = new UserPost() { ID = 13, DatePosted = DateTime.Parse("10/16/2020"), Text = "1984 George Orwell", Community = books, User = owlsilverberry };
             owlsilverberry.Posts.Push(post14); books.Posts.Push(post14);
             
-            var post15 = new UserPost() { ID = 14, DatePosted = DateTime.Parse("11/17/2020"), Text = "The A key on my keyboard is half A and half Q.", Community = mildlyinteresting, User = yogapianosalt };
+            var post15 = new UserPost() { ID = 14, DatePosted = DateTime.Parse("10/16/2020"), Text = "The A key on my keyboard is half A and half Q.", Community = mildlyinteresting, User = yogapianosalt };
             yogapianosalt.Posts.Push(post15); mildlyinteresting.Posts.Push(post15);
             
-            var post16 = new UserPost() { ID = 15, DatePosted = DateTime.Parse("11/17/2020"), Text = "Barca - Alaves", Community = sports, User = lepegen };
+            var post16 = new UserPost() { ID = 15, DatePosted = DateTime.Parse("10/17/2020"), Text = "Barca - Alaves", Community = sports, User = lepegen };
             lepegen.Posts.Push(post16); sports.Posts.Push(post16);
             
-            var post17 = new UserPost() { ID = 16, DatePosted = DateTime.Parse("11/17/2020"), Text = "v1.1 Now Up :D", Community = announcements, User = citylightsbird };
+            var post17 = new UserPost() { ID = 16, DatePosted = DateTime.Parse("10/17/2020"), Text = "v1.1 Now Up :D", Community = announcements, User = citylightsbird };
             citylightsbird.Posts.Push(post17); announcements.Posts.Push(post17);
             
-            var post18 = new UserPost() { ID = 17, DatePosted = DateTime.Parse("11/17/2020"), Text = "I ran 3 miles yesterday Eventually I just said “here keep your purse”", Community = funny, User = cucumberapple };
+            var post18 = new UserPost() { ID = 17, DatePosted = DateTime.Parse("10/18/2020"), Text = "I ran 3 miles yesterday Eventually I just said “here keep your purse”", Community = funny, User = cucumberapple };
             cucumberapple.Posts.Push(post18); funny.Posts.Push(post18);
             
-            var post19 = new UserPost() { ID = 18, DatePosted = DateTime.Parse("11/17/2020"), Text = "How is everybody doing?", Community = askcommunity, User = animaltracksnet };
+            var post19 = new UserPost() { ID = 18, DatePosted = DateTime.Parse("10/18/2020"), Text = "How is everybody doing?", Community = askcommunity, User = animaltracksnet };
             animaltracksnet.Posts.Push(post19); askcommunity.Posts.Push(post19);
             
-            var post20 = new UserPost() { ID = 19, DatePosted = DateTime.Parse("11/17/2020"), Text = "Watch Dogs: Legion now released", Community = gaming, User = rearwindowowl };
+            var post20 = new UserPost() { ID = 19, DatePosted = DateTime.Parse("10/19/2020"), Text = "Watch Dogs: Legion now released", Community = gaming, User = rearwindowowl };
             rearwindowowl.Posts.Push(post20); gaming.Posts.Push(post20);
             #endregion
 
