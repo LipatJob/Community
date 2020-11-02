@@ -57,13 +57,7 @@ namespace CS102L_MP
 
 
 
-        public string PostDisplay(UserPost post)
-        {
-            Console.WriteLine(
-                $"{post.User.Name} posted to {post.Community.Name} on {post.DatePosted.ToShortDateString()} \n" +
-                $"{post.Text}\n");
-            return "";
-        }
+        
 
         // USERS MODULE
         public void UsersMenu()
@@ -108,7 +102,7 @@ namespace CS102L_MP
 
                 Console.WriteLine(
                 bar() +
-                "[1] View User Profile" +
+                "[1] View User Profile " +
                 "[X] Back");
                 string selection = JHelper.InputString("Enter Selection: ", toUpper:true,validator: e => e.In("1", "X"));
                 if (selection == "1")
@@ -129,6 +123,7 @@ namespace CS102L_MP
             {
                 Console.Clear();
 
+                // Display Profile Description
                 Console.WriteLine($"Profile of {user.Name}");
 
                 // Display Common Communities
@@ -136,18 +131,18 @@ namespace CS102L_MP
 
                 // Display Posts
                 Console.WriteLine("\nPosts: ");
-                foreach (var post in user.Posts) { PostDisplay(post); Console.WriteLine(); }
+                foreach (var post in user.Posts) { PostDisplay(post); }
 
                 // Get Input
                 bool followed = Logic.IsFollowed(user);
                 Console.WriteLine();
                 Console.WriteLine(
                     bar() +
-                    $"[1]  {(followed ? "Unfollow User" : "Follow User ")}" +
+                    $"[1]  {(followed ? "Unfollow User" : "Follow User ")} " +
                     "[2] See Followed Communities " +
                     "[3] See Followed Users " +
                     "[X] Back");
-                string selection = JHelper.InputString("Enter Selection: ");
+                string selection = JHelper.InputString("Enter Selection: ", toUpper: true, validator: e => e.In("1", "2", "3", "X"));
                 if (selection == "1") { if (followed) { Logic.UnfollowUser(user); } else { Logic.FollowUser(user); }  }
                 if (selection == "2") { SeeFollowedCommunities(user); }
                 if (selection == "3") { SeeFollowedUsers(user); }
@@ -229,12 +224,12 @@ namespace CS102L_MP
                 bar()+
                 "[1] Select User " +
                 "[X] Back");
-                string selection = JHelper.InputString("Enter Selection (-1 to go Back): ");
+                string selection = JHelper.InputString("Enter Selection: ", toUpper: true, validator: e => e.In("1", "X"));
 
                 // Perform Action
                 if (selection == "1")
                 {
-                    int userNumber = JHelper.InputInt("Enter Number: ", validator: e => e > 0 && e <= followedUsers.Count);
+                    int userNumber = JHelper.InputInt("Enter Number (-1 to go Back): ", validator: e => e > 0 && e <= followedUsers.Count);
                     if(userNumber == -1) { continue; }
                     UserProfile(followedUsers[userNumber - 1]);
                 }
@@ -335,7 +330,15 @@ namespace CS102L_MP
 
         private string bar()
         {
-            return "-----------------------------------------------------\n";
+            return "--------------------------------------------------------------------------\n";
+        }
+
+        public string PostDisplay(UserPost post)
+        {
+            Console.WriteLine(
+                $"{post.User.Name} posted to {post.Community.Name} on {post.DatePosted.ToShortDateString()} \n" +
+                $"{post.Text}\n");
+            return "";
         }
     }
 }
