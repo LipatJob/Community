@@ -12,7 +12,7 @@ namespace CS102L_MP
         static void Main(string[] args)
         {
             DataInitialization initialize = new DataInitialization();
-            initialize.Run();
+            //initialize.Run();
             var logic = new CommunityLogic();
             var display = new CommunityDisplay(logic);
             display.WelcomeScreen();

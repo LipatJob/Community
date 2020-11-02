@@ -80,6 +80,14 @@ namespace CS102L_MP
 
         public bool ValidateNewUsername(string e)
         {
+            foreach (var letter in e)
+            {
+                if(!char.IsLetterOrDigit(letter)) 
+                {
+                    Console.WriteLine("Username may only conatin letters or digits");
+                    return false;
+                }
+            }
             if(e.Length < 5) { Console.WriteLine("> Username must be atleast 5 characters"); return false; }
             if (Logic.ExistingUser(e)) { Console.WriteLine("> Username is taken"); return false; }
 
@@ -184,7 +192,7 @@ namespace CS102L_MP
                 else if (display.HasNextPage && selection == "W") { display.NextPage(); }
                 else if (selection == "1") { SeeRecommendedUsers(); }
                 else if (selection == "2") { SearchUsers(); }
-                else if (selection == "3") { SeeFollowedUsers(CommunityModel.GetInstace().LoggedinUser); }
+                else if (selection == "3") { SeeFollowedUsers(CommunityModel.GetInstance().LoggedinUser); }
                 else if (selection == "X") { break; }
                 else { Console.WriteLine("Please Enter a Valid Selection."); }
             }

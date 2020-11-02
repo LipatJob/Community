@@ -22,7 +22,7 @@ namespace CS102L_MP.Models
         public string Password { get; set; }
         public IStack<UserPost> Posts { get; }
         public ITree<Community> Communities { get; }
-        public IEnumerable<User> FollowedUsers { get { return CommunityModel.GetInstace().Users.Neighbors(this).Select(e=>e.Item1); } }
+        public IEnumerable<User> FollowedUsers { get { return CommunityModel.GetInstance().Users.Neighbors(this).Select(e=>e.Item1); } }
 
         public int CompareTo(User other)
         {

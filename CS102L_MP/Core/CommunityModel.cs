@@ -12,7 +12,7 @@ namespace CS102L_MP
     {
         // SINGLETON
         private static CommunityModel instance = null;
-        public static CommunityModel GetInstace()
+        public static CommunityModel GetInstance()
         {
             if (instance == null) { instance = new CommunityModel();  }
             return instance;

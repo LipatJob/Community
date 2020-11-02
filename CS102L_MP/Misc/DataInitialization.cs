@@ -11,7 +11,7 @@ namespace CS102L_MP.Misc
     {
         public void Run()
         {
-            var model = CommunityModel.GetInstace();
+            var model = CommunityModel.GetInstance();
 
             // Create Communitties
             #region

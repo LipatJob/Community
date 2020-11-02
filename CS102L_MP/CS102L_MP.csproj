@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Core\CommunityLogic.cs" />
     <Compile Include="Core\CommunityModel.cs" />
+    <Compile Include="Core\CommunityModelSerializer.cs" />
     <Compile Include="Core\DisplayHelper\EnumerableDisplay.cs" />
     <Compile Include="JobLib\JHelper.cs" />
     <Compile Include="JobLib\Keyed.cs" />

@@ -1,4 +1,5 @@
-﻿using CS102L_MP.Lib;
+﻿using CS102L_MP.Core;
+using CS102L_MP.Lib;
 using CS102L_MP.Lib.Concrete;
 using CS102L_MP.Models;
 using JobLib;
@@ -17,12 +18,16 @@ namespace CS102L_MP
         AVLTree<Community> Communities;
         ListDirectedGraph<User> Users;
         User LoggedinUser;
+        CommunityModelSerializer serializer;
 
         public CommunityLogic()
         {
-            Communities = CommunityModel.GetInstace().Communities;
-            Users = CommunityModel.GetInstace().Users;
-            LoggedinUser = CommunityModel.GetInstace().LoggedinUser;
+            Communities = CommunityModel.GetInstance().Communities;
+            Users = CommunityModel.GetInstance().Users;
+            LoggedinUser = CommunityModel.GetInstance().LoggedinUser;
+            serializer = new CommunityModelSerializer();
+            //serializer.Serialize();
+            serializer.Deserialize();
         }
 
         // User Module
