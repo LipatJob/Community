@@ -357,6 +357,7 @@ namespace CS102L_MP
                 $"{(display.HasNextPage ? "[W] Next Page \n" : "")}" +
                 "[1] See Communities " +
                 "[2] See Followed Communities " +
+                "[3] Create Community " +
                 "[X] Back");
                 string selection = JHelper.InputString("Enter Selection: ", toUpper: true);
 
@@ -364,6 +365,7 @@ namespace CS102L_MP
                 else if (display.HasNextPage && selection == "W") { display.NextPage(); }
                 else if (selection == "1") { SeeCommunities(); }
                 else if (selection == "2") { SeeFollowedCommunities(); }
+                else if (selection == "3") { CreateCommunity(); }
                 else if (selection == "X") { break; }
                 else { Console.WriteLine("Please Enter a Valid Selection."); }
             }
@@ -399,7 +401,7 @@ namespace CS102L_MP
 
                 display.Display();
 
-                bool following = Logic.IsFollwingCommunity(community);
+                bool following = Logic.IsFollowingCommunity(community);
                 Console.WriteLine(
                 bar() +
                 $"{(display.HasPreviousPage ? "[Q] Previous Page " : "")}" +
@@ -436,10 +438,11 @@ namespace CS102L_MP
 
         public void SeeFollowedCommunities()
         {
-            IList<Community> followedCommunities = Logic.FollowedCommunities().ToList();
+            
             while (true)
             {
                 Console.Clear();
+                IList<Community> followedCommunities = Logic.FollowedCommunities().ToList();
 
                 Title($"Followed Communities");
 
@@ -454,6 +457,32 @@ namespace CS102L_MP
                 SeeCommunityPosts(followedCommunities[userNumber - 1]);
 
             }
+        }
+
+        public void CreateCommunity()
+        {
+            Console.Clear();
+
+            Title("Create Community");
+            string name = JHelper.InputString("Enter Community Name: ", validator: ValidCommunityName).ToLower(); ;
+            Logic.CreateCommunity(name);
+            Console.WriteLine("Community Created");
+            JHelper.ContinuePrompt();
+        }
+
+        public bool ValidCommunityName(string name)
+        {
+            if(name.Length < 3)
+            {
+                Console.WriteLine("> Community Name Must be at least 3 Characters");
+                return false;
+            }
+            if(Logic.HasCommunity(name))
+            {
+                Console.WriteLine("> Community Name Must be Unique");
+                return false;
+            }
+            return true;
         }
 
         // Helpers

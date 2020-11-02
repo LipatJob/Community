@@ -21,6 +21,7 @@ namespace CS102L_MP
 
         public void Display()
         {
+            if(items.Count == 0) { Console.WriteLine("\nLooks like nothing's here :/\n"); }
             for (int i = (CurrentPage * ItemsPerPage); i < items.Count && i < (CurrentPage * ItemsPerPage) + ItemsPerPage; i++)
             {
                 display(items[i]);

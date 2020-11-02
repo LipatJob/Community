@@ -54,6 +54,8 @@ namespace CS102L_MP
             user.Name = username;
             user.Password = password;
             Users.AddVertex(user);
+            
+            serializer.SerializeUsers();
         }
 
         public bool ExistingUser(string username)
@@ -107,11 +109,13 @@ namespace CS102L_MP
         public void FollowUser(User user)
         {
             Users.AddEdge(LoggedinUser, user, 0);
+            serializer.SerializeFollowedUsers();
         }
 
         public void UnfollowUser(User user)
         {
             Users.RemoveEdge(LoggedinUser, user);
+            serializer.SerializeFollowedUsers();
         }
 
         public IEnumerable<User> GetRecommendedUsers()
@@ -189,9 +193,10 @@ namespace CS102L_MP
 
             community.Posts.Push(post);
             LoggedinUser.Posts.Push(post);
+            serializer.SerializePosts(LoggedinUser);
         }
 
-        public bool IsFollwingCommunity(Community community)
+        public bool IsFollowingCommunity(Community community)
         {
             return LoggedinUser.Communities.Contains(community);
         }
@@ -201,50 +206,49 @@ namespace CS102L_MP
             return Communities.Retrieve(name, (e,f)=> e.CompareTo(f.Name)) != null;
         }
 
-        public void SeeCommunities()
-        {
-            var communities = Communities.Inorder();
-        }
-
         public void JoinCommunity(Community community)
         {
             LoggedinUser.Communities.Insert(community);
+            serializer.SerializeFollowedCommunities();
         }
 
         public void LeaveCommunity(Community community)
         {
             LoggedinUser.Communities.Remove(community);
+            serializer.SerializeFollowedCommunities();
         }
 
         public void PostToCommunity(Community community, UserPost post)
         {
             community.Posts.Push(post);
+            serializer.SerializePosts(LoggedinUser);
         }
 
-        public void SeeCommunityPosts(Community community)
-        {
-            var posts = community.Posts.AsEnumerable();
-        }
 
-        public void CreateCommunity()
+        public void CreateCommunity(string communityName)
         {
-            Community community = new Community(); ;
+            Community community = new Community() { Id = Communities.Inorder().Max(e => e.Id) + 1, Name= communityName };
             Communities.Insert(community);
+            FollowCommunity(community);
+            serializer.SerializeCommunitites();
         }
 
         internal void UnfollowCommunity(Community community)
         {
             LoggedinUser.Communities.Remove(community);
+            serializer.SerializeFollowedCommunities();
         }
 
         internal void FollowCommunity(Community community)
         {
             LoggedinUser.Communities.Insert(community);
+            serializer.SerializeFollowedCommunities();
         }
 
         internal IEnumerable<Community> FollowedCommunities()
         {
             return LoggedinUser.Communities.Inorder();
         }
+
     }
 }
