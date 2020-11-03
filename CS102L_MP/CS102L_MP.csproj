@@ -65,6 +65,7 @@
     <Compile Include="Lib\Concrete\SinglyLinkedList.cs" />
     <Compile Include="Lib\Concrete\LinkedStack.cs" />
     <Compile Include="Lib\Concrete\TreeMap.cs" />
+    <Compile Include="Lib\Concrete\HashMap.cs" />
     <Compile Include="Lib\ICountable.cs" />
     <Compile Include="Lib\IGraph.cs" />
     <Compile Include="Lib\ILinkedList.cs" />

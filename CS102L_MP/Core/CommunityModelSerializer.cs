@@ -1,4 +1,5 @@
-﻿using CS102L_MP.Models;
+﻿using CS102L_MP.Lib;
+using CS102L_MP.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,9 +14,9 @@ namespace CS102L_MP.Core
         string dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
         CommunityModel model;
-        Dictionary<string, User> Users;
-        Dictionary<string, Community> Communities;
-        Dictionary<int, UserPost> Posts;
+        HashMap<string, User> Users;
+        HashMap<string, Community> Communities;
+        HashMap<int, UserPost> Posts;
 
 
         public CommunityModelSerializer()
@@ -25,9 +26,9 @@ namespace CS102L_MP.Core
             Directory.CreateDirectory(dir + "/data/userposts");
 
             model = CommunityModel.GetInstance();
-            Users = new Dictionary<string, User>();
-            Communities = new Dictionary<string, Community>();
-            Posts = new Dictionary<int, UserPost>();
+            Users = new HashMap<string, User>();
+            Communities = new HashMap<string, Community>();
+            Posts = new HashMap<int, UserPost>();
         }
 
         public void Serialize()

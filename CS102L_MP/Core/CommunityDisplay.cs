@@ -29,10 +29,10 @@ namespace CS102L_MP
             while (true)
             {
                 Console.Clear();
+                Title("Welcome to Community");
                 Console.WriteLine(
-                "Welcome to Community\n" +
-                "[1] Login\n" +
-                "[2] Register\n" +
+                "[1] Login " +
+                "[2] Register " +
                 "[X] Exit"
                 );
                 string selection = JHelper.InputString("Enter Selection: ", toUpper: true, validator: e=>e.In("1", "2", "X"));
