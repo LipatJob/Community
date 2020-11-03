@@ -18,7 +18,7 @@ namespace CS102L_MP
         AVLTree<Community> Communities;
         ListDirectedGraph<User> Users;
         User LoggedinUser;
-        CommunityModelSerializer serializer;
+        public CommunityModelSerializer serializer;
 
         public CommunityLogic()
         {
@@ -26,8 +26,6 @@ namespace CS102L_MP
             Users = CommunityModel.GetInstance().Users;
             LoggedinUser = CommunityModel.GetInstance().LoggedinUser;
             serializer = new CommunityModelSerializer();
-            //serializer.Serialize();
-            serializer.Deserialize();
         }
 
         // User Module
@@ -135,6 +133,11 @@ namespace CS102L_MP
             return user.Communities.Inorder().Where(e => LoggedinUser.Communities.Contains(e));
         }
 
+        public IEnumerable<User> CommonFollowedUsers(User user)
+        {
+            return user.FollowedUsers.Where(e => LoggedinUser.FollowedUsers.Contains(e));
+        }
+
         public int UserIndex(User user1, User user2)
         {
             int maxCommunitites = LoggedinUser.Communities.Count;
@@ -146,6 +149,38 @@ namespace CS102L_MP
             return maxCommunitites - count;
         }
 
+        /*
+          public IEnumerable<User> CommonFollowedUsers(User user)
+        {
+            return user.FollowedUsers.Where(e => LoggedinUser.FollowedUsers.Contains(e));
+        }
+
+
+        public double UserIndex(User user1, User user2)
+        {
+            int communityCount = 0;
+            int usersCount = 0;
+            double communityWeight = .7;
+            double userWeight = .3;
+            double maxIndex = (LoggedinUser.Communities.Count * communityWeight) + (LoggedinUser.FollowedUsers.Count() * userWeight);
+
+
+            foreach (var community in user1.Communities.Inorder())
+            {
+                if (user2.Communities.Contains(community)) { communityCount++; }
+            }
+            foreach (var user in user1.FollowedUsers)
+            {
+                if (user2.FollowedUsers.Contains(user)) { usersCount++; }
+            }
+
+
+            return maxIndex - ((communityCount * communityWeight) + (usersCount * userWeight));
+        }
+ 
+
+         */
+
         public bool IsFollowed(User user)
         {
             return LoggedinUser.FollowedUsers.Contains(user);
@@ -155,13 +190,22 @@ namespace CS102L_MP
         {
             var users = Users.ToList();
             IList<Tuple<User, int>> usersIndex = new List<Tuple<User, int>>();
+
+            int maxLen = users.Max(e => e.Name.Length);
+            key = AddPadding(key, maxLen);
             foreach (var user in users)
             {
                 if (user == LoggedinUser) { continue; }
-                usersIndex.Add(Tuple.Create(user, Algorithms.EditDistance(key, user.Name)));
+                string name = AddPadding(user.Name, maxLen);
+                usersIndex.Add(Tuple.Create(user, Algorithms.EditDistance(key, name)));
             }
             Algorithms.QuickSort(usersIndex, UserSearchComparator);
             return usersIndex.Select(e=>e.Item1).ToList();
+        }
+
+        public string AddPadding(string value, int length)
+        {
+            return value + string.Concat(Enumerable.Repeat("|", length - value.Length));
         }
 
         private int UserSearchComparator(Tuple<User, int> user1, Tuple<User, int> user2)

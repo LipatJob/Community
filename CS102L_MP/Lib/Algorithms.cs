@@ -25,11 +25,12 @@ namespace CS102L_MP.Lib
 
         public static IEnumerable<Tuple<T, int>> GenerateMST<T> (IGraph<T> graph, T key, Func<T, T, int> comparator)
         {
-            var distance = new TreeMap2<T, int>();
+            var distance = new TreeMap<T, int>();
+            var parent = new TreeMap<T, T>();
             var visited = new AVLTree<T>();
             foreach (var vertex in graph.Vertices)
             {
-                distance[vertex] = int.MaxValue;
+                distance[vertex] = 1000000 + comparator(key, vertex);
             }
 
             PriorityQueue<Tuple<T, int>> pq = new PriorityQueue<Tuple<T, int>>(new MSTcmp<T>());
@@ -38,22 +39,23 @@ namespace CS102L_MP.Lib
 
             while ( pq.Count != 0)
             {
-                var u = pq.Front().Item1;
+                var start = pq.Front().Item1;
                 pq.Dequeue();
-                visited.Insert(u);
+                visited.Insert(start);
 
-                foreach (var item in graph.Neighbors(u))
+                foreach (var item in graph.Neighbors(start))
                 {
-                    T v = item.Item1;
-                    int weight = distance[u] + comparator(u, v);
+                    T destination = item.Item1;
+                    int weight = distance[start] + comparator(key, destination);
 
-                    if (!visited.Contains(v))
+                    if (!visited.Contains(destination))
                     {
-                        if (weight < distance[v])
+                        if (weight < distance[destination])
                         {
-                            distance[v] = weight;
+                            distance[destination] = weight;
+                            parent[destination] = start;
                         }
-                        pq.Enqueue(Tuple.Create(v, distance[u]));
+                        pq.Enqueue(Tuple.Create(destination, distance[start] + weight ));
                     }
                 }
             }
@@ -86,7 +88,7 @@ namespace CS102L_MP.Lib
             {
                 for (int j = 1; j <= m; j++)
                 {
-                    int cost = (t[j - 1] == s[i - 1]) ? 0 : 1;
+                    int cost = (t[j - 1] == s[i - 1] && t[j-1] != '|') ? 0 : 1;
                     int min1 = d[i - 1, j] + 1;
                     int min2 = d[i, j - 1] + 1;
                     int min3 = d[i - 1, j - 1] + cost;

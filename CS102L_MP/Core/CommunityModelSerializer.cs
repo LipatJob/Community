@@ -33,7 +33,6 @@ namespace CS102L_MP.Core
 
         public void Serialize()
         {
-
             SerializeCommunitites();
             SerializeUsers();
             SerializeFollowedCommunities();
@@ -126,6 +125,10 @@ namespace CS102L_MP.Core
             DeserializeFollowedCommunities();
             DeserializeFollowedUsers();
             DeserializeAllPosts();
+
+            Users = null;
+            Communities = null;
+            Posts = null;
         }
 
         public void DeserializeCommunitites()

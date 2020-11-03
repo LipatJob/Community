@@ -24,11 +24,11 @@ namespace CS102L_MP.Lib.Concrete
             public int Weight;
         }
 
-        TreeMap2<T, ILinkedList<Tuple<T, int>>> adjacencyList;
+        TreeMap<T, ILinkedList<Tuple<T, int>>> adjacencyList;
 
         public ListDirectedGraph()
         {
-            adjacencyList = new TreeMap2<T, ILinkedList<Tuple<T, int>>>();
+            adjacencyList = new TreeMap<T, ILinkedList<Tuple<T, int>>>();
         }
         public void AddEdge(T starting, T destination, int weight)
         {

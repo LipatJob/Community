@@ -4,13 +4,7 @@ using CS102L_MP.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using JobLib;
-using System.Collections;
-using System.ComponentModel.Design;
-using System.Security.Cryptography.X509Certificates;
 
 namespace CS102L_MP
 {
@@ -70,7 +64,21 @@ namespace CS102L_MP
             Console.Clear();
             // Enter Username
             string username = JHelper.InputString("Enter Username: ", validator: ValidateNewUsername);
-            string password = JHelper.InputPassword("Enter Password: ", validator: ValidateNewPassword);
+            
+            string password = "";
+            string confirmPassword = "A";
+
+            while(password!=confirmPassword)
+            {
+                password = JHelper.InputPassword("Enter Password: ", validator: ValidateNewPassword);
+                confirmPassword = JHelper.InputPassword("Confirm Password: ");
+
+                if(password != confirmPassword)
+                {
+                    Console.WriteLine("> Please Enter the Same Password");
+                }
+            }
+            
 
             Logic.Register(username, password);
 
@@ -80,24 +88,28 @@ namespace CS102L_MP
 
         public bool ValidateNewUsername(string e)
         {
+            if(e.Contains("|")) { return false; }
+
             foreach (var letter in e)
             {
                 if(!char.IsLetterOrDigit(letter)) 
                 {
-                    Console.WriteLine("Username may only conatin letters or digits");
+                    Console.WriteLine("Username may only contain letters or digits");
                     return false;
                 }
             }
-            if(e.Length < 5) { Console.WriteLine("> Username must be atleast 5 characters"); return false; }
+            if(e.Length < 5) { Console.WriteLine("> Username must be at least 5 characters"); return false; }
             if (Logic.ExistingUser(e)) { Console.WriteLine("> Username is taken"); return false; }
+
+            
 
             return true;
         }
 
         public bool ValidateNewPassword(string e)
         {
-            if (e.Length < 5) { Console.WriteLine("> password must be atleast 5 characters"); return false; }
-
+            if (e.Contains("|")) { return false; }
+            if (e.Length < 5) { Console.WriteLine("> Password must be at least 5 characters"); return false; }
             return true;
         }
 
@@ -207,7 +219,9 @@ namespace CS102L_MP
 
                 // Display Users
                 Console.WriteLine("Select Recommended User:");
-                DisplayEnumeratedList(users, e => e.Name);
+                DisplayEnumeratedList(users, e => 
+                e.Name +
+                "\n    Communities in Common: " + string.Join(", ", Logic.CommonCommunities(e).Take(3).Select(f=>f.Name)) + "\n");
                 Console.WriteLine("[-1] Go Back");
                 Console.Write(bar());
                 
@@ -225,13 +239,18 @@ namespace CS102L_MP
             {
                 Console.Clear();
                 IEnumerable<Community> communities = Logic.CommonCommunities(user).Take(5);
+                IEnumerable<User> followedUsers = Logic.CommonFollowedUsers(user).Take(5);
+
                 display.items = user.Posts.ToList();
 
                 // Display Profile Description
                 Title($"Profile of {user.Name}");
 
                 // Display Common Communities
-                Console.WriteLine("Common Communities: " + string.Join(", ", communities.Select(e => e.Name)));
+                Console.WriteLine("Communities in Common: " + string.Join(", ", communities.Select(e => e.Name)));
+
+                Console.WriteLine("Followed Users in Common: " + string.Join(", ", followedUsers.Select(e => e.Name)));
+
 
                 // Display Posts
                 Console.WriteLine("\nPosts: ");
@@ -278,36 +297,25 @@ namespace CS102L_MP
 
         public void SearchUsers()
         {
+            
+            Console.Clear();
+
+            Title("Search for Users");
+            string key = JHelper.InputString("Enter Search Key: ");
+            IList<User> users = Logic.SearchUser(key);
+
             while (true)
             {
-                Console.Clear();
-
-                Title("Search for Users");
-                string key = JHelper.InputString("Enter Search Key: ");
-                IList<User> users = Logic.SearchUser(key);
-
-
                 Console.Clear();
                 Title($"Search Results for \"{key}\"");
 
                 // Display list of users
                 DisplayEnumeratedList(users, e => e.Name);
+                Console.Write(bar());
 
-                // Input Selection
-                Console.WriteLine(
-                bar()+
-                "[1] View User Profile " +
-                "[X] Back");
-                string selection = JHelper.InputString("Enter Selection: ", toUpper: true ,validator: e=>e.In("1", "X"));
-
-                // Perform Action
-                if (selection == "1")
-                {
-                    int userNumber = JHelper.InputInt("Enter Number (-1 to go Back): ", validator: e => e == -1 || (e > 0 && e <= users.Count));
-                    if (userNumber == - 1) { continue; }
-                    UserProfile(users[userNumber - 1]);
-                }
-                else if (selection == "X") { break; }
+                int userNumber = JHelper.InputInt("Enter Number (-1 to go Back): ", validator: e => e == -1 || (e > 0 && e <= users.Count));
+                if (userNumber == - 1) { break; }
+                UserProfile(users[userNumber - 1]);
             }
 
         }
@@ -350,7 +358,7 @@ namespace CS102L_MP
                 Console.WriteLine(
                 bar()+
                 $"{(display.HasPreviousPage ? "[Q] Previous Page " : "")}" +
-                $"{(display.HasNextPage ? "[W] Next Page \n" : "")}" +
+                $"{(display.HasNextPage ? "[W] Next Page" : "")}\n" +
                 "[1] See Communities " +
                 "[2] See Followed Communities " +
                 "[3] Create Community " +
@@ -428,7 +436,7 @@ namespace CS102L_MP
             Title($"Post to {community.Name}");
             Console.Clear();
             // Input text
-            string text = JHelper.InputString("Enter Text: ", validator: e => !string.IsNullOrWhiteSpace(e));
+            string text = JHelper.InputString("Enter Text: ", validator: e => !string.IsNullOrWhiteSpace(e) && !e.Contains("|"));
             Logic.PostToCommunity(text, community);
         }
 
@@ -468,7 +476,9 @@ namespace CS102L_MP
 
         public bool ValidCommunityName(string name)
         {
-            if(name.Length < 3)
+            if (name.Contains("|")) { return false; }
+
+            if (name.Length < 3)
             {
                 Console.WriteLine("> Community Name Must be at least 3 Characters");
                 return false;

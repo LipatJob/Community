@@ -16,6 +16,8 @@ namespace CS102L_MP
             DataInitialization initialize = new DataInitialization();
             //initialize.Run();
             var logic = new CommunityLogic();
+            //logic.serializer.Serialize();
+            logic.serializer.Deserialize();
             var display = new CommunityDisplay(logic);
             display.WelcomeScreen();
 
