@@ -196,7 +196,7 @@ namespace CS102L_MP
             foreach (var user in users)
             {
                 if (user == LoggedinUser) { continue; }
-                string name = AddPadding(user.Name, maxLen);
+                string name = user.Name;
                 usersIndex.Add(Tuple.Create(user, Algorithms.EditDistance(key, name)));
             }
             Algorithms.QuickSort(usersIndex, UserSearchComparator);
@@ -205,6 +205,7 @@ namespace CS102L_MP
 
         public string AddPadding(string value, int length)
         {
+            //
             return value + string.Concat(Enumerable.Repeat("|", length - value.Length));
         }
 

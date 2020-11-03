@@ -221,7 +221,7 @@ namespace CS102L_MP
                 Console.WriteLine("Select Recommended User:");
                 DisplayEnumeratedList(users, e => 
                 e.Name +
-                "\n    Communities in Common: " + string.Join(", ", Logic.CommonCommunities(e).Take(3).Select(f=>f.Name)) + "\n");
+                "\n    Communities in Common: " + string.Join(", ", Logic.CommonCommunities(e).Take(3).Select(f=>f.Name)));
                 Console.WriteLine("[-1] Go Back");
                 Console.Write(bar());
                 

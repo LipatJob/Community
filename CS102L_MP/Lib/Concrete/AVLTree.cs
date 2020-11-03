@@ -143,17 +143,17 @@ namespace CS102L_MP.Lib.Concrete
         {
             if (node == null) { return; }
 
-            Preorder(node.Left, items);
+            Inorder(node.Left, items);
             items.Add(node.Value);
-            Preorder(node.Right, items);
+            Inorder(node.Right, items);
         }
 
         private void Postorder(Node node, ICollection<T> items)
         {
             if (node == null) { return; }
 
-            Preorder(node.Left, items);
-            Preorder(node.Right, items);
+            Postorder(node.Left, items);
+            Postorder(node.Right, items);
             items.Add(node.Value);
         }
 
