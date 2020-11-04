@@ -58,6 +58,7 @@
     <Compile Include="Lib\Algorithms.cs" />
     <Compile Include="Lib\Concrete\AVLTree.cs" />
     <Compile Include="Lib\Concrete\LinkedQueue.cs" />
+    <Compile Include="Lib\Concrete\DoublyLinkedList.cs" />
     <Compile Include="Lib\Concrete\TreeMap.cs" />
     <Compile Include="Lib\Concrete\ListDirectedGraph.cs" />
     <Compile Include="Lib\Concrete\MatrixGraph.cs" />

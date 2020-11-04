@@ -25,8 +25,7 @@ namespace CS102L_MP.Lib
 
         public static IEnumerable<Tuple<T, int>> GenerateMST<T> (IGraph<T> graph, T key, Func<T, T, int> comparator)
         {
-            var distance = new TreeMap<T, int>();
-            var parent = new TreeMap<T, T>();
+            var distance = new HashMap<T, int>();
             var visited = new AVLTree<T>();
             foreach (var vertex in graph.Vertices)
             {
@@ -53,7 +52,6 @@ namespace CS102L_MP.Lib
                         if (weight < distance[destination])
                         {
                             distance[destination] = weight;
-                            parent[destination] = start;
                         }
                         pq.Enqueue(Tuple.Create(destination, distance[start] + weight ));
                     }

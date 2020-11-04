@@ -11,11 +11,11 @@ namespace CS102L_MP.Lib.Concrete
     {
         public LinkedQueue()
         {
-            this.list = new SinglyLinkedList<T>();
+            this.list = new DoublyLinkedList<T>();
         }
         public LinkedQueue(ILinkedList<T> list)
         {
-            this.list = new SinglyLinkedList<T>();
+            this.list = new DoublyLinkedList<T>();
             foreach (var item in list)
             {
                 Enqueue(item);

@@ -206,7 +206,7 @@ namespace JobLib
             {
                 // Display prompt and ask for input
                 Console.Write(prompt);
-
+                value = "";
                 // Enter Password
                 while (true)
                 {

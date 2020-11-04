@@ -13,15 +13,26 @@ namespace CS102L_MP
     {
         static void Main(string[] args)
         {
+
+            bool initializeFlag = false;
+
+
             DataInitialization initialize = new DataInitialization();
-            //initialize.Run();
             var logic = new CommunityLogic();
-            //logic.serializer.Serialize();
+
+            if(initializeFlag)
+            {
+                logic.serializer.RestartData();
+                initialize.Run();
+                logic.serializer.Serialize();
+                Console.WriteLine("Data Initialized");
+            }
+            
+            
             logic.serializer.Deserialize();
             var display = new CommunityDisplay(logic);
             display.WelcomeScreen();
 
-            Console.ReadLine();
         }
 
 

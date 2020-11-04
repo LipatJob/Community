@@ -29,6 +29,7 @@ namespace CS102L_MP
                 "[2] Register " +
                 "[X] Exit"
                 );
+                Console.Write(bar());
                 string selection = JHelper.InputString("Enter Selection: ", toUpper: true, validator: e=>e.In("1", "2", "X"));
                 if (selection == "1") { Login(); }
                 else if (selection == "2") { Register(); }
@@ -88,13 +89,16 @@ namespace CS102L_MP
 
         public bool ValidateNewUsername(string e)
         {
-            if(e.Contains("|")) { return false; }
+            if(e.Contains("|")) {
+                Console.WriteLine("> Please do not use Illegal Characters");
+                return false;
+            }
 
             foreach (var letter in e)
             {
                 if(!char.IsLetterOrDigit(letter)) 
                 {
-                    Console.WriteLine("Username may only contain letters or digits");
+                    Console.WriteLine("> Username may only contain letters or digits");
                     return false;
                 }
             }
@@ -108,7 +112,11 @@ namespace CS102L_MP
 
         public bool ValidateNewPassword(string e)
         {
-            if (e.Contains("|")) { return false; }
+            if (e.Contains("|"))
+            {
+                Console.WriteLine("> Please do not use Illegal Characters");
+                return false;
+            }
             if (e.Length < 5) { Console.WriteLine("> Password must be at least 5 characters"); return false; }
             return true;
         }
@@ -122,8 +130,8 @@ namespace CS102L_MP
 
             while (true)
             {
-                display.items = Logic.GetMainFeed().ToList();
                 Console.Clear();
+                display.items = Logic.GetMainFeed().ToList();
 
                 Title("Home");
 
@@ -134,12 +142,14 @@ namespace CS102L_MP
                 Console.WriteLine(
                  bar() +
                 $"{(display.HasPreviousPage ? "[Q] Previous Page " : "")}" +
-                $"{(display.HasNextPage ? "[W] Next page" : "")}\n" +
+                $"{(display.HasNextPage ? "[W] Next page" : "")}" + (display.HasNextPage || display.HasPreviousPage ? "\n" : "") +
                 "[1] Create Post " +
                 "[2] Users " +
                 "[3] Communities " +
+                "[4] Profile " +
                 "[X] Logout");
-                string selection = JHelper.InputString("Enter Selection: ", toUpper: true, validator: e => e.In("Q", "W", "1", "2", "3", "X"));
+                Console.Write(bar());
+                string selection = JHelper.InputString("Enter Selection: ", toUpper: true, validator: e => e.In("Q", "W", "1", "2", "3", "4", "X"));
 
                 // Perform selection
                 if (display.HasPreviousPage && selection == "Q") { display.PreviousPage();  }
@@ -147,6 +157,7 @@ namespace CS102L_MP
                 else if (selection == "1") { CreatePost(); }
                 else if (selection == "2") { UsersMenu(); }
                 else if (selection == "3") { CommunitiesMenu(); }
+                else if (selection == "4") { SeeOwnProfile(); }
                 else if (selection == "X") { break; }
             }
             
@@ -189,18 +200,17 @@ namespace CS102L_MP
                 Console.WriteLine(
                 bar() +
                 $"{(display.HasPreviousPage ? "[Q] Previous Page " : "")}" +
-                $"{(display.HasNextPage ? "[W] Next Page" : "")}\n" +
+                $"{(display.HasNextPage ? "[W] Next Page" : "")}" + (display.HasNextPage || display.HasPreviousPage ? "\n" : "") +
                 "[1] See Recommended Users " +
                 "[2] Search Users " +
-                "[3] See Followed Users " +
                 "[X] Back");
-                string selection = JHelper.InputString("Enter Selection: ", toUpper: true, validator: e => e.In("Q", "W", "1", "2", "3", "X"));
+                Console.Write(bar());
+                string selection = JHelper.InputString("Enter Selection: ", toUpper: true, validator: e => e.In("Q", "W", "1", "2", "X"));
 
                 if (display.HasPreviousPage && selection == "Q") { display.PreviousPage(); }
                 else if (display.HasNextPage && selection == "W") { display.NextPage(); }
                 else if (selection == "1") { SeeRecommendedUsers(); }
                 else if (selection == "2") { SearchUsers(); }
-                else if (selection == "3") { SeeFollowedUsers(CommunityModel.GetInstance().LoggedinUser); }
                 else if (selection == "X") { break; }
                 else { Console.WriteLine("Please Enter a Valid Selection."); }
             }
@@ -260,11 +270,12 @@ namespace CS102L_MP
                 Console.WriteLine(
                     bar() +
                    $"{(display.HasPreviousPage ? "[Q] Previous Page " : "")}" +
-                   $"{(display.HasNextPage ? "[W] Next Page" : "")}\n" +
-                   $"[1]  {(followed ? "Unfollow User" : "Follow User ")} " +
-                    "[2] See Followed Communities " +
+                   $"{(display.HasNextPage ? "[W] Next Page" : "")}" + (display.HasNextPage || display.HasPreviousPage ? "\n" : "") +
+                   $"[1] {(followed ? "Unfollow User" : "Follow User ")} " +
+                    "[2] See Joined Communities " +
                     "[3] See Followed Users " +
                     "[X] Back");
+                Console.Write(bar());
                 string selection = JHelper.InputString("Enter Selection: ", toUpper: true, validator: e => e.In("Q", "W", "1", "2", "3", "X"));
                 if (display.HasPreviousPage && selection == "Q") { display.PreviousPage(); }
                 else if (display.HasNextPage && selection == "W") { display.NextPage(); }
@@ -282,7 +293,7 @@ namespace CS102L_MP
                 IList<Community> followedCommunities = user.Communities.Inorder().ToList();
                 Console.Clear();
 
-                Title($"Communities Followed by {user.Name}");
+                Title($"Communities Joined by {user.Name}");
 
                 // Dispay List of Communities
                 DisplayEnumeratedList(followedCommunities, e => e.Name);
@@ -339,6 +350,42 @@ namespace CS102L_MP
             }
         }
 
+        public void SeeOwnProfile()
+        {
+            User user = Logic.GetLoggedinUser();
+            IEnumerable<UserPost> posts = user.Posts;
+            EnumerableDisplay<UserPost> display = new EnumerableDisplay<UserPost>(posts, 5, PostDisplay);
+            while (true)
+            {
+                Console.Clear();
+                
+                display.items = user.Posts.ToList();
+
+                // Display Profile Description
+                Title($"Profile of {user.Name}");
+
+                // Display Posts
+                Console.WriteLine("Posts: ");
+                display.Display();
+                // Get Input
+                bool followed = Logic.IsFollowed(user);
+                Console.WriteLine(
+                    bar() +
+                   $"{(display.HasPreviousPage ? "[Q] Previous Page " : "")}" +
+                   $"{(display.HasNextPage ? "[W] Next Page" : "")}" + (display.HasNextPage || display.HasPreviousPage ? "\n" : "") +
+                    "[1] See Joined Communities " +
+                    "[2] See Followed Users " +
+                    "[X] Back");
+                Console.Write(bar());
+                string selection = JHelper.InputString("Enter Selection: ", toUpper: true, validator: e => e.In("Q", "W", "1", "2", "X"));
+                if (display.HasPreviousPage && selection == "Q") { display.PreviousPage(); }
+                else if (display.HasNextPage && selection == "W") { display.NextPage(); }
+                else if (selection == "1") { SeeFollowedCommunities(user); }
+                else if (selection == "2") { SeeFollowedUsers(user); }
+                else if (selection == "X") { break; }
+            }
+        }
+
 
 
         // COMMUNITIES MODULE
@@ -358,20 +405,18 @@ namespace CS102L_MP
                 Console.WriteLine(
                 bar()+
                 $"{(display.HasPreviousPage ? "[Q] Previous Page " : "")}" +
-                $"{(display.HasNextPage ? "[W] Next Page" : "")}\n" +
+                $"{(display.HasNextPage ? "[W] Next Page" : "")}" + (display.HasNextPage || display.HasPreviousPage ? "\n" : "") +
                 "[1] See Communities " +
-                "[2] See Followed Communities " +
-                "[3] Create Community " +
+                "[2] Create Community " +
                 "[X] Back");
-                string selection = JHelper.InputString("Enter Selection: ", toUpper: true);
+                Console.Write(bar());
+                string selection = JHelper.InputString("Enter Selection: ", toUpper: true, validator: e=>e.In("Q", "W", "1", "2", "X"));
 
                 if (display.HasPreviousPage && selection == "Q") { display.PreviousPage(); }
                 else if (display.HasNextPage && selection == "W") { display.NextPage(); }
                 else if (selection == "1") { SeeCommunities(); }
-                else if (selection == "2") { SeeFollowedCommunities(); }
-                else if (selection == "3") { CreateCommunity(); }
+                else if (selection == "2") { CreateCommunity(); }
                 else if (selection == "X") { break; }
-                else { Console.WriteLine("Please Enter a Valid Selection."); }
             }
         }
 
@@ -409,12 +454,13 @@ namespace CS102L_MP
                 Console.WriteLine(
                 bar() +
                 $"{(display.HasPreviousPage ? "[Q] Previous Page " : "")}" +
-                $"{(display.HasNextPage ? "[W] Next page" : "")}\n" +
-                $"[1] {(following ? "Unfollow" : "Follow")} " +
+                $"{(display.HasNextPage ? "[W] Next page" : "")}" + (display.HasNextPage || display.HasPreviousPage ? "\n" : "") +
+                $"[1] {(following ? "Leave" : "Join")} " +
                 $"[2] Post " +
                  "[X] Back");
-                
+                Console.Write(bar());
                 string selection = JHelper.InputString("Enter Selection: ", toUpper: true, validator: e=>e.In("1", "2" ,"X"));
+
                 if (selection == "1") 
                 {
                     if (following)
@@ -483,7 +529,7 @@ namespace CS102L_MP
                 Console.WriteLine("> Community Name Must be at least 3 Characters");
                 return false;
             }
-            if(Logic.HasCommunity(name))
+            if(Logic.HasCommunity(name.ToLower()))
             {
                 Console.WriteLine("> Community Name Must be Unique");
                 return false;
@@ -494,6 +540,11 @@ namespace CS102L_MP
         // Helpers
         private void DisplayEnumeratedList<T>(IEnumerable<T> values, Func<T, string> display)
         {
+            if(values.Count() == 0)
+            {
+                Console.WriteLine("\nLooks like nothing's here :/\n");
+            }
+
             int i = 1;
             foreach (var item in values)
             {
@@ -511,7 +562,7 @@ namespace CS102L_MP
         {
             var diff = DateTime.Now - post.DatePosted;
 
-            string diffDate = $"{(diff.Days > 0 ? diff.Days + " days ": "")} {(diff.Hours > 0 ? diff.Hours + " hours" : diff.Minutes + " minutes")} ago";
+            string diffDate = $"{(diff.Days > 0 ? diff.Days + " days ": "")}{(diff.Hours > 0 ? diff.Hours + " hours" : diff.Minutes + " minutes")} ago";
 
             Console.WriteLine(
                 $"{post.User.Name} on {post.Community.Name}:\n" +

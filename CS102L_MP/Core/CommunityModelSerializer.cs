@@ -18,10 +18,17 @@ namespace CS102L_MP.Core
         HashMap<string, Community> Communities;
         HashMap<int, UserPost> Posts;
 
+        public void RestartData()
+        {
+            if(Directory.Exists(dir + "/data")) { Directory.Delete(dir + "/data", true); }
+            Directory.CreateDirectory(dir + "/data");
+            Directory.CreateDirectory(dir + "/data/communityposts");
+            Directory.CreateDirectory(dir + "/data/userposts");
+        }
 
         public CommunityModelSerializer()
         {
-            Directory.CreateDirectory(dir+"/data");
+            Directory.CreateDirectory(dir + "/data");
             Directory.CreateDirectory(dir + "/data/communityposts");
             Directory.CreateDirectory(dir + "/data/userposts");
 

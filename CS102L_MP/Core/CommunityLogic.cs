@@ -48,7 +48,7 @@ namespace CS102L_MP
         public void Register(string username, string password)
         {
             var user = new User();
-            user.Id = Users.Max(e => e.Id) + 1;
+            user.Id = Users.Count == 0 ? 0 : Users.Max(e => e.Id) + 1;
             user.Name = username;
             user.Password = password;
             Users.AddVertex(user);
@@ -249,7 +249,7 @@ namespace CS102L_MP
 
         public bool HasCommunity(string name)
         {
-            return Communities.Retrieve(name, (e,f)=> e.CompareTo(f.Name)) != null;
+            return Communities.Retrieve(name, (e,f)=> e.ToLower().CompareTo(f.Name.ToLower())) != null;
         }
 
         public void JoinCommunity(Community community)
@@ -267,7 +267,7 @@ namespace CS102L_MP
 
         public void CreateCommunity(string communityName)
         {
-            Community community = new Community() { Id = Communities.Inorder().Max(e => e.Id) + 1, Name= communityName };
+            Community community = new Community() { Id = Communities.Count == 0 ? 0 : Communities.Inorder().Max(e => e.Id) + 1, Name= communityName };
             Communities.Insert(community);
             FollowCommunity(community);
             serializer.SerializeCommunitites();
@@ -290,5 +290,9 @@ namespace CS102L_MP
             return LoggedinUser.Communities.Inorder();
         }
 
+        internal User GetLoggedinUser()
+        {
+            return LoggedinUser;
+        }
     }
 }
